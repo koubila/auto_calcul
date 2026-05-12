@@ -1,323 +1,766 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Calculette Auto-Entrepreneur + Salarié</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculette AE + Salarié</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+  :root {
+    --bg: #F5F2EC;
+    --surface: #FDFBF7;
+    --surface2: #EDE9E0;
+    --ink: #1A1714;
+    --ink2: #6B6560;
+    --ink3: #A09990;
+    --accent: #2D5A3D;
+    --accent2: #4A8C60;
+    --accent-light: #E8F2EB;
+    --warn: #8B4513;
+    --warn-light: #FDF0E6;
+    --danger: #7A1F1F;
+    --danger-light: #FBE9E9;
+    --border: rgba(26,23,20,0.12);
+    --border-strong: rgba(26,23,20,0.22);
+    --radius: 2px;
+    --radius-lg: 4px;
+  }
 
-    body {
-      margin: 0;
-      padding: 40px;
-      background: #f4f6f9;
-      color: #222;
-    }
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
 
-    .container {
-      max-width: 950px;
-      margin: auto;
-      background: white;
-      border-radius: 16px;
-      padding: 32px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 32px;
-    }
+  header {
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border-strong);
+    padding-bottom: 1.5rem;
+  }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-    }
+  .header-tag {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 0.5rem;
+  }
 
-    .card {
-      background: #fafafa;
-      border: 1px solid #e5e5e5;
-      border-radius: 12px;
-      padding: 24px;
-    }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 2.4rem;
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ink);
+  }
 
-    .card h2 {
-      margin-top: 0;
-      margin-bottom: 20px;
-    }
+  h1 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-    }
+  .subtitle {
+    font-size: 12px;
+    color: var(--ink3);
+    margin-top: 0.5rem;
+    letter-spacing: 0.03em;
+  }
 
-    input,
-    select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-bottom: 20px;
-      font-size: 16px;
-    }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
 
-    .results {
-      margin-top: 32px;
-      background: #111827;
-      color: white;
-      border-radius: 16px;
-      padding: 24px;
-    }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+  }
 
-    .result-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+  }
 
-    .result-item:last-child {
-      border-bottom: none;
-    }
+  .panel-title {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-    .big {
-      font-size: 24px;
-      color: #4ade80;
-      font-weight: bold;
-    }
+  .panel-title::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: var(--ink3);
+  }
 
-    @media (max-width: 768px) {
-      body {
-        padding: 16px;
-      }
+  .field {
+    margin-bottom: 1.25rem;
+  }
 
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--ink2);
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  input[type="number"], select {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+    border-radius: 0;
+  }
+
+  input[type="number"]:focus, select:focus {
+    border-color: var(--accent2);
+  }
+
+  .input-suffix {
+    position: relative;
+  }
+
+  .input-suffix input {
+    padding-right: 2.5rem;
+  }
+
+  .input-suffix span {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    color: var(--ink3);
+  }
+
+  .hint {
+    font-size: 10px;
+    color: var(--ink3);
+    margin-top: 4px;
+    letter-spacing: 0.02em;
+  }
+
+  .results {
+    margin-top: 2rem;
+  }
+
+  .results-header {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    margin-bottom: 1.25rem;
+    color: var(--ink);
+  }
+
+  .big-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 560px) {
+    .big-grid { grid-template-columns: 1fr; }
+  }
+
+  .metric {
+    background: var(--surface);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .metric-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 6px;
+  }
+
+  .metric-value {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .metric-value.green { color: var(--accent); }
+  .metric-value.orange { color: var(--warn); }
+  .metric-value.red { color: var(--danger); }
+
+  .metric-sub {
+    font-size: 11px;
+    color: var(--ink3);
+    margin-top: 2px;
+  }
+
+  .detail-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .detail-title {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+    margin-bottom: 0;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .detail-row:last-child { border-bottom: none; }
+
+  .detail-row .name { color: var(--ink2); }
+  .detail-row .amount { font-weight: 500; }
+  .detail-row .amount.deducted { color: var(--danger); }
+  .detail-row .amount.earned { color: var(--accent); }
+  .detail-row.total .name { font-weight: 500; color: var(--ink); }
+
+  .taux-badge {
+    font-size: 10px;
+    background: var(--surface2);
+    color: var(--ink3);
+    padding: 2px 7px;
+    letter-spacing: 0.03em;
+    margin-left: 8px;
+  }
+
+  .alert {
+    padding: 1rem 1.25rem;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--ink2);
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent2);
+    margin-bottom: 1.5rem;
+  }
+
+  .alert.warn {
+    background: var(--warn-light);
+    border-left-color: var(--warn);
+    color: #5A3010;
+  }
+
+  .donut-section {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 2rem;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 520px) {
+    .donut-section { grid-template-columns: 1fr; }
+  }
+
+  canvas#donut { display: block; }
+
+  .legend { list-style: none; }
+  .legend li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--ink2);
+    padding: 5px 0;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    border-radius: 50%;
+  }
+
+  .legend-name { flex: 1; }
+  .legend-pct { color: var(--ink3); font-size: 11px; }
+
+  .footer-note {
+    font-size: 10px;
+    color: var(--ink3);
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+    margin-top: 2rem;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .toggle-label {
+    font-size: 11px;
+    color: var(--ink2);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+  }
+
+  .toggle {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+  .slider {
+    position: absolute;
+    inset: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border-strong);
+    transition: 0.2s;
+  }
+
+  .slider:before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--ink3);
+    top: 3px;
+    left: 3px;
+    transition: 0.2s;
+  }
+
+  .toggle input:checked + .slider { background: var(--accent); border-color: var(--accent); }
+  .toggle input:checked + .slider:before { transform: translateX(16px); background: #fff; }
+</style>
 </head>
 <body>
-
 <div class="container">
 
-  <h1>Calculette Salarié + Auto-Entrepreneur</h1>
+  <header>
+    <div class="header-tag">Outil fiscal · 2024–2025</div>
+    <h1>Calculette <em>Auto-entrepreneur</em><br>+ Salarié</h1>
+    <p class="subtitle">Estimez vos impôts, cotisations URSSAF et revenus nets combinés · France métropolitaine</p>
+  </header>
 
   <div class="grid">
+    <div class="panel">
+      <div class="panel-title">Activité salariée</div>
 
-    <!-- SALAIRE -->
-    <div class="card">
+      <div class="field">
+        <label>Salaire brut annuel</label>
+        <div class="input-suffix">
+          <input type="number" id="salaire_brut" value="34000" min="0" step="100">
+          <span>€</span>
+        </div>
+        <div class="hint">Votre salaire brut tel qu'indiqué sur le contrat</div>
+      </div>
 
-      <h2>Salaire CDI</h2>
-
-      <label for="salary">
-        Salaire brut annuel (€)
-      </label>
-
-      <input
-        type="number"
-        id="salary"
-        value="34000"
-      />
-
+      <div class="field">
+        <label>Cotisations salariales</label>
+        <div class="input-suffix">
+          <input type="number" id="taux_cotisations_sal" value="22" min="0" max="30" step="0.1">
+          <span>%</span>
+        </div>
+        <div class="hint">Taux moyen ~22% (sécurité sociale, retraite, chômage…)</div>
+      </div>
     </div>
 
-    <!-- AUTO ENTREPRISE -->
-    <div class="card">
+    <div class="panel">
+      <div class="panel-title">Activité auto-entrepreneur</div>
 
-      <h2>Auto-Entreprise</h2>
+      <div class="field">
+        <label>Chiffre d'affaires annuel</label>
+        <div class="input-suffix">
+          <input type="number" id="ca" value="20000" min="0" step="100">
+          <span>€</span>
+        </div>
+      </div>
 
-      <label for="period">
-        Type de chiffre d'affaires
-      </label>
+      <div class="field">
+        <label>Type d'activité</label>
+        <select id="activite">
+          <option value="bic_vente">BIC — Vente de marchandises</option>
+          <option value="bic_service" selected>BIC — Prestations de services</option>
+          <option value="bnc">BNC — Activités libérales</option>
+        </select>
+        <div class="hint">Détermine le taux URSSAF et l'abattement fiscal</div>
+      </div>
 
-      <select id="period">
-        <option value="monthly">Mensuel</option>
-        <option value="yearly">Annuel</option>
-      </select>
-
-      <label for="turnover">
-        Chiffre d'affaires (€)
-      </label>
-
-      <input
-        type="number"
-        id="turnover"
-        value="2000"
-      />
-
-      <label for="activity">
-        Type d'activité
-      </label>
-
-      <select id="activity">
-        <option value="0.246">Service BNC (24.6%)</option>
-        <option value="0.231">Service BIC (23.1%)</option>
-        <option value="0.123">Vente (12.3%)</option>
-      </select>
-
-      <label for="tax">
-        Estimation taux impôt (%)
-      </label>
-
-      <input
-        type="number"
-        id="tax"
-        value="10"
-      />
-
+      <div class="toggle-row" style="margin-top:0.5rem;">
+        <label class="toggle" for="acre">
+          <input type="checkbox" id="acre">
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label" onclick="document.getElementById('acre').click()">Bénéficier de l'ACRE (1ère année)</span>
+      </div>
     </div>
-
   </div>
 
-  <!-- RESULTATS -->
-  <div class="results">
-
-    <div class="result-item">
-      <span>Salaire net annuel estimé</span>
-      <strong id="salaryNet">0 €</strong>
+  <div class="panel" style="margin-bottom:1.5rem;">
+    <div class="panel-title">Situation fiscale</div>
+    <div class="grid" style="margin-bottom:0; gap:1rem;">
+      <div class="field" style="margin-bottom:0;">
+        <label>Nombre de parts fiscales</label>
+        <select id="parts">
+          <option value="1" selected>1 part (célibataire)</option>
+          <option value="1.5">1,5 parts (1 enfant seul)</option>
+          <option value="2">2 parts (couple ou 2 enfants seul)</option>
+          <option value="2.5">2,5 parts</option>
+          <option value="3">3 parts</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label>Versement libératoire (VFL)</label>
+        <select id="vfl">
+          <option value="0" selected>Non — IR classique</option>
+          <option value="1">Oui — prélèvement à la source</option>
+        </select>
+        <div class="hint">Si VFL activé, l'IR AE est calculé sur le CA</div>
+      </div>
     </div>
-
-    <div class="result-item">
-      <span>Salaire net mensuel estimé</span>
-      <strong id="salaryMonthly">0 €</strong>
-    </div>
-
-    <div class="result-item">
-      <span>CA auto-entrepreneur mensuel</span>
-      <strong id="monthlyCA">0 €</strong>
-    </div>
-
-    <div class="result-item">
-      <span>CA auto-entrepreneur annuel</span>
-      <strong id="yearlyCA">0 €</strong>
-    </div>
-
-    <div class="result-item">
-      <span>Cotisations URSSAF</span>
-      <strong id="urssaf">0 €</strong>
-    </div>
-
-    <div class="result-item">
-      <span>Net après URSSAF</span>
-      <strong id="afterUrssaf">0 €</strong>
-    </div>
-
-    <div class="result-item">
-      <span>Impôts estimés</span>
-      <strong id="taxAmount">0 €</strong>
-    </div>
-
-    <div class="result-item">
-      <span>Bénéfice net auto-entrepreneur</span>
-      <strong id="finalAuto">0 €</strong>
-    </div>
-
-    <div class="result-item">
-      <span>Revenu total mensuel estimé</span>
-      <strong class="big" id="totalMonthly">0 €</strong>
-    </div>
-
   </div>
 
+  <div class="results" id="results">
+    <!-- populated by JS -->
+  </div>
+
+  <p class="footer-note">
+    Estimation indicative basée sur le barème IR 2024, les taux URSSAF auto-entrepreneur en vigueur et une déduction forfaitaire des cotisations salariales de 22%.
+    Ne tient pas compte des réductions d'impôt, crédits, déductions spécifiques, CSG non déductible partielle, ni des plafonds de sécurité sociale.
+    À titre informatif uniquement — consultez un expert-comptable pour une analyse personnalisée.
+  </p>
 </div>
 
 <script>
+const TRANCHES_IR = [
+  { min: 0,     max: 11294,  taux: 0 },
+  { min: 11294, max: 28797,  taux: 0.11 },
+  { min: 28797, max: 82341,  taux: 0.30 },
+  { min: 82341, max: 177106, taux: 0.41 },
+  { min: 177106,max: Infinity,taux: 0.45 },
+];
 
-  const salaryInput = document.getElementById('salary');
-  const turnoverInput = document.getElementById('turnover');
-  const activityInput = document.getElementById('activity');
-  const taxInput = document.getElementById('tax');
-  const periodInput = document.getElementById('period');
+const ACTIVITES = {
+  bic_vente:   { urssaf: 0.121, urssaf_acre: 0.0605, abattement: 0.71, vfl: 0.01, label: 'BIC vente' },
+  bic_service: { urssaf: 0.212, urssaf_acre: 0.106,  abattement: 0.50, vfl: 0.017, label: 'BIC services' },
+  bnc:         { urssaf: 0.212, urssaf_acre: 0.106,  abattement: 0.34, vfl: 0.022, label: 'BNC libéral' },
+};
 
-  const salaryNetEl = document.getElementById('salaryNet');
-  const salaryMonthlyEl = document.getElementById('salaryMonthly');
-  const monthlyCAEl = document.getElementById('monthlyCA');
-  const yearlyCAEl = document.getElementById('yearlyCA');
-  const urssafEl = document.getElementById('urssaf');
-  const afterUrssafEl = document.getElementById('afterUrssaf');
-  const taxAmountEl = document.getElementById('taxAmount');
-  const finalAutoEl = document.getElementById('finalAuto');
-  const totalMonthlyEl = document.getElementById('totalMonthly');
+function calcIR(revenuImposable, parts) {
+  const qi = revenuImposable / parts;
+  let impot = 0;
+  for (const t of TRANCHES_IR) {
+    if (qi <= t.min) continue;
+    const slice = Math.min(qi, t.max) - t.min;
+    impot += slice * t.taux;
+  }
+  return impot * parts;
+}
 
-  function formatEuro(value) {
-    return value.toLocaleString('fr-FR', {
-      style: 'currency',
-      currency: 'EUR'
-    });
+function fmt(n) {
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(Math.round(n));
+}
+
+function pct(n) { return (n * 100).toFixed(1) + '%'; }
+
+function calculate() {
+  const salBrut = parseFloat(document.getElementById('salaire_brut').value) || 0;
+  const tauxCotSal = (parseFloat(document.getElementById('taux_cotisations_sal').value) || 22) / 100;
+  const ca = parseFloat(document.getElementById('ca').value) || 0;
+  const activiteKey = document.getElementById('activite').value;
+  const acre = document.getElementById('acre').checked;
+  const parts = parseFloat(document.getElementById('parts').value) || 1;
+  const vfl = document.getElementById('vfl').value === '1';
+
+  const act = ACTIVITES[activiteKey];
+
+  // ── ÉTAPE 1 : Salarié ──────────────────────────────────────────
+  const cotisationsSal = salBrut * tauxCotSal;
+  const salNet = salBrut - cotisationsSal;
+
+  // ── ÉTAPE 2 : AE ───────────────────────────────────────────────
+  const tauxUrssaf = acre ? act.urssaf_acre : act.urssaf;
+  const urssafAE = ca * tauxUrssaf;
+  const beneficeAEBrut = ca - urssafAE;                    // bénéfice avant abattement fiscal
+  const beneficeAEImposable = ca * (1 - act.abattement);   // après abattement forfaitaire
+
+  // ── ÉTAPE 3 : Revenu fiscal de référence & IR ──────────────────
+  let irTotal, irSalarie, irAE, irSalSeul, irDeltaAE, irVFL = 0;
+
+  if (vfl) {
+    // VFL : l'AE est imposé séparément (taux forfaitaire sur CA)
+    irVFL = ca * act.vfl;
+    irSalarie = Math.max(0, calcIR(salNet, parts));
+    irAE = irVFL;
+    irTotal = irSalarie + irVFL;
+    irSalSeul = irSalarie;
+    irDeltaAE = irVFL; // surcoût dû à l'AE
+  } else {
+    // IR classique : bénéfice AE s'ajoute au salaire net → IR calculé sur l'ensemble
+    irSalSeul = Math.max(0, calcIR(salNet, parts));                        // IR si salaire seul
+    const revenuFiscalGlobal = salNet + beneficeAEImposable;
+    irTotal = Math.max(0, calcIR(revenuFiscalGlobal, parts));              // IR sur le tout
+    irDeltaAE = irTotal - irSalSeul;                                       // surcoût dû à l'AE
+    // Ventilation pour l'affichage par source
+    const ratio = revenuFiscalGlobal > 0 ? salNet / revenuFiscalGlobal : 0.5;
+    irSalarie = irTotal * ratio;
+    irAE = irTotal * (1 - ratio);
   }
 
-  function calculate() {
+  // ── ÉTAPE 4 : Revenus nets ──────────────────────────────────────
+  const netSalarie = salNet - irSalarie;
+  const netAE = beneficeAEBrut - irAE;      // CA − URSSAF − IR imputé AE
+  const netTotal = netSalarie + netAE;
 
-    // SALAIRE
-    const grossSalary = parseFloat(salaryInput.value) || 0;
+  const revenuFiscalGlobal = vfl ? salNet : salNet + beneficeAEImposable;
+  const tauxEffectifIR = revenuFiscalGlobal > 0 ? irTotal / revenuFiscalGlobal * 100 : 0;
+  const tauxMarginal = getTauxMarginal(revenuFiscalGlobal / parts);
 
-    const yearlyNetSalary = grossSalary * 0.78;
-    const monthlyNetSalary = yearlyNetSalary / 12;
+  render({
+    salBrut, cotisationsSal, salNet, irSalarie, irSalSeul, irDeltaAE, netSalarie,
+    ca, urssafAE, beneficeAEBrut, beneficeAEImposable, irAE, netAE,
+    irTotal, tauxEffectifIR, tauxMarginal, netTotal,
+    revenuFiscalGlobal, parts,
+    activite: act.label, vfl, acre, tauxUrssaf, abattement: act.abattement
+  });
+}
 
-    // AUTO ENTREPRISE
-    const turnoverValue = parseFloat(turnoverInput.value) || 0;
-    const period = periodInput.value;
+function getTauxMarginal(qi) {
+  for (let i = TRANCHES_IR.length - 1; i >= 0; i--) {
+    if (qi > TRANCHES_IR[i].min) return TRANCHES_IR[i].taux;
+  }
+  return 0;
+}
 
-    let monthlyCA = 0;
-    let yearlyCA = 0;
+function render(d) {
+  const container = document.getElementById('results');
+  const tauxGlobal = (d.salBrut + d.ca) > 0 ? (d.netTotal / (d.salBrut + d.ca) * 100).toFixed(1) : '0';
+  const abattPct = Math.round(d.abattement * 100);
 
-    if (period === 'monthly') {
-      monthlyCA = turnoverValue;
-      yearlyCA = turnoverValue * 12;
-    } else {
-      yearlyCA = turnoverValue;
-      monthlyCA = turnoverValue / 12;
-    }
+  container.innerHTML = `
+    <p class="results-header">Résultats estimés</p>
 
-    const urssafRate = parseFloat(activityInput.value);
-    const taxRate = (parseFloat(taxInput.value) || 0) / 100;
+    <div class="big-grid">
+      <div class="metric">
+        <div class="metric-label">Net total annuel</div>
+        <div class="metric-value green">${fmt(d.netTotal)}</div>
+        <div class="metric-sub">${fmt(d.netTotal/12)} / mois · taux net ${tauxGlobal}%</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Impôt sur le revenu</div>
+        <div class="metric-value orange">${fmt(d.irTotal)}</div>
+        <div class="metric-sub">Taux effectif ${d.tauxEffectifIR.toFixed(1)}% · marginal ${Math.round(d.tauxMarginal*100)}%</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Cotisations totales</div>
+        <div class="metric-value red">${fmt(d.cotisationsSal + d.urssafAE)}</div>
+        <div class="metric-sub">Salariales + URSSAF AE</div>
+      </div>
+    </div>
 
-    const urssaf = monthlyCA * urssafRate;
+    <div class="donut-section">
+      <canvas id="donut" width="180" height="180"></canvas>
+      <ul class="legend" id="legend"></ul>
+    </div>
 
-    const afterUrssaf = monthlyCA - urssaf;
+    <!-- ÉTAPE 1 & 2 : détail par source -->
+    <div class="grid">
+      <div class="detail-section">
+        <div class="detail-title">① Activité salariée</div>
+        <div class="detail-row">
+          <span class="name">Salaire brut</span>
+          <span class="amount">${fmt(d.salBrut)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="name">Cotisations salariales <span class="taux-badge">${pct(d.salBrut > 0 ? d.cotisationsSal/d.salBrut : 0)}</span></span>
+          <span class="amount deducted">− ${fmt(d.cotisationsSal)}</span>
+        </div>
+        <div class="detail-row total">
+          <span class="name">Salaire net</span>
+          <span class="amount">${fmt(d.salNet)}</span>
+        </div>
+      </div>
 
-    const taxes = afterUrssaf * taxRate;
+      <div class="detail-section">
+        <div class="detail-title">② Auto-entrepreneur (${d.activite})</div>
+        <div class="detail-row">
+          <span class="name">Chiffre d'affaires</span>
+          <span class="amount">${fmt(d.ca)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="name">Cotisations URSSAF <span class="taux-badge">${pct(d.tauxUrssaf)}${d.acre ? ' ACRE' : ''}</span></span>
+          <span class="amount deducted">− ${fmt(d.urssafAE)}</span>
+        </div>
+        <div class="detail-row total">
+          <span class="name">Bénéfice AE (avant IR)</span>
+          <span class="amount">${fmt(d.beneficeAEBrut)}</span>
+        </div>
+      </div>
+    </div>
 
-    const finalAuto = afterUrssaf - taxes;
+    <!-- ÉTAPE 3 : agrégation fiscale -->
+    <div class="detail-section" style="margin-bottom:1.5rem;">
+      <div class="detail-title">③ Calcul de l'impôt${d.vfl ? ' (VFL activé)' : ' — revenu fiscal agrégé'}</div>
+      ${d.vfl ? `
+        <div class="detail-row">
+          <span class="name">IR salarié <span class="taux-badge">barème IR sur ${fmt(d.salNet)}</span></span>
+          <span class="amount deducted">− ${fmt(d.irSalSeul)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="name">IR AE — versement libératoire <span class="taux-badge">taux forfaitaire sur CA</span></span>
+          <span class="amount deducted">− ${fmt(d.irAE)}</span>
+        </div>
+      ` : `
+        <div class="detail-row">
+          <span class="name">Salaire net imposable</span>
+          <span class="amount">${fmt(d.salNet)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="name">+ Bénéfice AE imposable <span class="taux-badge">abattement ${abattPct}%</span></span>
+          <span class="amount">+ ${fmt(d.beneficeAEImposable)}</span>
+        </div>
+        <div class="detail-row" style="background:var(--surface2); padding: 10px 8px; margin: 4px -8px;">
+          <span class="name" style="font-weight:500; color:var(--ink);">Revenu fiscal de référence</span>
+          <span class="amount" style="font-weight:500;">${fmt(d.revenuFiscalGlobal)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="name">IR sur salaire seul (simulation)</span>
+          <span class="amount" style="color:var(--ink3);">− ${fmt(d.irSalSeul)}</span>
+        </div>
+        <div class="detail-row">
+          <span class="name">IR sur revenu global (barème ${d.parts} part${d.parts > 1 ? 's' : ''})</span>
+          <span class="amount deducted">− ${fmt(d.irTotal)}</span>
+        </div>
+        <div class="detail-row" style="border-top: 1px solid var(--border-strong);">
+          <span class="name" style="color:var(--warn);">Surcoût IR dû à l'activité AE</span>
+          <span class="amount" style="color:var(--warn);">+ ${fmt(d.irDeltaAE)}</span>
+        </div>
+      `}
+    </div>
 
-    const totalMonthly = monthlyNetSalary + finalAuto;
+    <!-- ÉTAPE 4 : nets -->
+    <div class="detail-section" style="margin-bottom:1.5rem;">
+      <div class="detail-title">④ Revenus nets finaux</div>
+      <div class="detail-row">
+        <span class="name">Net salarié  <span class="taux-badge">${fmt(d.salNet)} − IR imputé</span></span>
+        <span class="amount earned">${fmt(d.netSalarie)}</span>
+      </div>
+      <div class="detail-row">
+        <span class="name">Net AE  <span class="taux-badge">bénéfice − IR imputé</span></span>
+        <span class="amount earned">${fmt(d.netAE)}</span>
+      </div>
+      <div class="detail-row total" style="background:var(--accent-light); padding: 12px 8px; margin: 4px -8px;">
+        <span class="name" style="font-weight:500; color:var(--accent);">Net total annuel</span>
+        <span class="amount" style="font-size:1.1rem; color:var(--accent);">${fmt(d.netTotal)}</span>
+      </div>
+      <div class="detail-row" style="border-top:none; padding-top:4px;">
+        <span class="name" style="color:var(--ink3);">Soit par mois</span>
+        <span class="amount" style="color:var(--ink2);">${fmt(d.netTotal/12)}</span>
+      </div>
+    </div>
 
-    // AFFICHAGE
-    salaryNetEl.textContent = formatEuro(yearlyNetSalary);
+    ${d.acre ? `<div class="alert">ACRE activée : cotisations URSSAF réduites de 50% la 1ère année. À revoir l'année suivante.</div>` : ''}
+    ${d.vfl ? `<div class="alert">Versement libératoire actif : l'IR AE est prélevé sur le CA (${(d.ca > 0 ? d.irAE/d.ca*100 : 0).toFixed(2)}%), indépendamment du barème global. Avantage si votre TMI est élevé.</div>` : ''}
+    ${!d.vfl && d.irDeltaAE > 0 ? `<div class="alert warn">L'activité AE génère un surcoût fiscal de ${fmt(d.irDeltaAE)} en faisant monter votre revenu dans une tranche supérieure (TMI ${Math.round(d.tauxMarginal*100)}%).</div>` : ''}
+  `;
 
-    salaryMonthlyEl.textContent = formatEuro(monthlyNetSalary);
+  drawDonut(d);
+}
 
-    monthlyCAEl.textContent = formatEuro(monthlyCA);
+function drawDonut(d) {
+  const canvas = document.getElementById('donut');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const total = d.salBrut + d.ca;
 
-    yearlyCAEl.textContent = formatEuro(yearlyCA);
+  const segments = [
+    { label: 'Net salarié',       value: d.netSalarie,        color: '#2D5A3D' },
+    { label: 'Net AE',            value: Math.max(0, d.netAE), color: '#4A8C60' },
+    { label: 'Impôt sur revenu',  value: d.irTotal,            color: '#8B4513' },
+    { label: 'Cotis. salariales', value: d.cotisationsSal,     color: '#C0822A' },
+    { label: 'Cotis. URSSAF AE',  value: d.urssafAE,           color: '#7A1F1F' },
+  ];
 
-    urssafEl.textContent = formatEuro(urssaf);
+  const cx = 90, cy = 90, r = 72, inner = 40;
+  ctx.clearRect(0, 0, 180, 180);
+  let angle = -Math.PI / 2;
 
-    afterUrssafEl.textContent = formatEuro(afterUrssaf);
-
-    taxAmountEl.textContent = formatEuro(taxes);
-
-    finalAutoEl.textContent = formatEuro(finalAuto);
-
-    totalMonthlyEl.textContent = formatEuro(totalMonthly);
+  for (const seg of segments) {
+    const slice = (seg.value / total) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, angle, angle + slice);
+    ctx.closePath();
+    ctx.fillStyle = seg.color;
+    ctx.fill();
+    angle += slice;
   }
 
-  salaryInput.addEventListener('input', calculate);
-  turnoverInput.addEventListener('input', calculate);
-  activityInput.addEventListener('change', calculate);
-  taxInput.addEventListener('input', calculate);
-  periodInput.addEventListener('change', calculate);
+  // Hole
+  ctx.beginPath();
+  ctx.arc(cx, cy, inner, 0, 2 * Math.PI);
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  ctx.fillStyle = isDark ? '#1A1714' : '#F5F2EC';
+  ctx.fill();
 
-  calculate();
+  // Legend
+  const legend = document.getElementById('legend');
+  if (legend) {
+    legend.innerHTML = segments.map(s => `
+      <li>
+        <span class="legend-dot" style="background:${s.color}"></span>
+        <span class="legend-name">${s.label}</span>
+        <span class="legend-pct">${total > 0 ? (s.value/total*100).toFixed(1) : 0}%</span>
+      </li>
+    `).join('');
+  }
+}
 
+// Listeners
+['salaire_brut','taux_cotisations_sal','ca','activite','parts','vfl','acre'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', calculate);
+  if (el) el.addEventListener('change', calculate);
+});
+
+calculate();
 </script>
-
 </body>
 </html>
